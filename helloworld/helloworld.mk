@@ -26,3 +26,4 @@ NAME := App_Helloworld
 
 $(NAME)_SOURCES := helloworld.c
 
+GLOBAL_DEFINES := AOS_NO_WIFI
