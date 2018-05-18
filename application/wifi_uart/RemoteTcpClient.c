@@ -176,7 +176,7 @@ void remoteTcpClient_thread(uint32_t inContext)
         if(remoteTcpClient_fd != -1){
           SocketClose(&remoteTcpClient_fd);
         }
-        mico_rtos_thread_sleep(CLOUD_RETRY);
+        mico_rtos_delay_milliseconds(CLOUD_RETRY*1000);
     }
   }
     

@@ -39,7 +39,7 @@ static void micoNotify_ApListCallback( ScanResult *pApList )
     app_log("got %d AP", pApList->ApNum);
     for ( i = 0; i < pApList->ApNum; i++ )
         {
-        app_log("ap%d: name = %s  | rssi=%d", i,pApList->ApList[i].ssid, pApList->ApList[i].rssi);
+        app_log("ap%d: name = %s  | rssi=%ddBm", i,pApList->ApList[i].ssid, pApList->ApList[i].rssi);
 
     }
 }
