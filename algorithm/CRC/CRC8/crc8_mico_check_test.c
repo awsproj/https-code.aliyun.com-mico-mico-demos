@@ -64,7 +64,7 @@ typedef struct testVector {
 uint8_t  crc8_mico_check_test(void);
 
 
-int application_start(void)
+int main(void)
 {
     uint8_t ret = 0;
  

@@ -63,18 +63,18 @@ typedef struct testVector {
 int  aes_test(void);
 
 
-int application_start(void)
+int main(void)
 {
     int ret = 0;
  
     aes_test_log( "AES in CBC mode Test Start\r\n" );
     
-    if ( (ret = aes_test()) != 0)        
+    if ( (ret = aes_test()) != 0)
         aes_test_log("AES in CBC mode Test Failed!  The Error Code is %d",ret);
-    
+
     else
         aes_test_log("AES in CBC mode Test Passed!");
-    
+
     return 0;
 
 }
@@ -84,7 +84,6 @@ int aes_test(void)
     Aes enc;
     Aes dec;
 
-    
     /* Defination of input string to be used AES Enryption */
     
     const byte msg[] = { /*length must be a multiple of 128 bits ��16 bytes��*/
@@ -101,10 +100,9 @@ int aes_test(void)
     byte key[] = "0123456789abcdef";  /* align  Must be 128 bits */
     byte iv[]  = "1234567890abcdef";  /* align  Must be 128 bits */
     
-    byte cipher[AES_BLOCK_SIZE * 8];
-    byte plain [AES_BLOCK_SIZE * 8];
-    
-   
+    char cipher[AES_BLOCK_SIZE * 8];
+    char plain [AES_BLOCK_SIZE * 8];
+
     AesSetKey(&enc, key, AES_BLOCK_SIZE, iv, AES_ENCRYPTION);
     AesSetKey(&dec, key, AES_BLOCK_SIZE, iv, AES_DECRYPTION);
     
@@ -124,19 +122,18 @@ int aes_test(void)
     AesCbcDecrypt(&dec, plain, cipher, sizeof(cipher));
     
     /* Print plain text */
-    printf("The Plain Text is: "); 
+    printf("The Plain Text is: ");
     for(int i=0;i<sizeof(msg);i++)
     {
         printf("-%x",plain[i]);    /* Print Plain Text after decryption */
     }
     printf("\r\n");
     printf("\r\n");
-    
-    /* Compare cipher text, generated from encryption, with verify[] predefined */    
+
+    /* Compare cipher text, generated from encryption, with verify[] predefined */
     if (memcmp(cipher, verify, sizeof(msg)))
         return -1;
-    
-    
+
     /* Compare plain text generated from decryption, with msg[] defined */
     if (memcmp(plain, msg, sizeof(msg)))
         return 1;

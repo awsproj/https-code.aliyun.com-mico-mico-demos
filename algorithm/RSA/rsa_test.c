@@ -124,7 +124,7 @@ const int sizeof_client_key_der_1024 = sizeof(client_key_der_1024) ;
 
 int  rsa_test(void);
 
-int application_start(void)
+int main(void)
 {
     int ret = 0;
  

@@ -26,3 +26,4 @@ NAME := App_AES_PKCS5
 
 $(NAME)_SOURCES := aes_with_pkcs5_padding_test.c
 
+$(NAME)_COMPONENTS += utilities/base64

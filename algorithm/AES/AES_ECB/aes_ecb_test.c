@@ -61,7 +61,7 @@ typedef struct testVector {
 int  aes_ecb_test(void);
 
 
-int application_start(void)
+int main(void)
 {
     int ret = 0;
  

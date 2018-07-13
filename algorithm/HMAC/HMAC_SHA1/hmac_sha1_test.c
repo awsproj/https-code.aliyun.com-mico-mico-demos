@@ -61,7 +61,7 @@ typedef struct testVector {
 int  hmac_sha1_test(void);
 
 
-int application_start(void)
+int main(void)
 {
     int ret = 0;
     

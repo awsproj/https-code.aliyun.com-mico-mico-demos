@@ -39,6 +39,13 @@ int main(void)
     /* Output on debug serial port */
     os_helloworld_log("Hello world!");
 
+    char a[4] = {0x01, 0x01, 0x01, 0x01};
+    char b[4] = {0x01, 0x01, 0x01, 0x01};
+
+    /* Compare cipher text, generated from encryption, with verify[] predefined */
+    if (memcmp(a, b, sizeof(a)))
+        os_helloworld_log("error");
+
     /* Trigger MiCO system led available on most MiCOKit */
     while ( 1 )
     {

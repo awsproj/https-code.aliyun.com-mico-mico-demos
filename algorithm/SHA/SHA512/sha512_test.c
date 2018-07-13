@@ -64,7 +64,7 @@ typedef struct testVector {
 int  sha512_test(void);
 
 
-int application_start(void)
+int main(void)
 {
     int ret = 0;
  

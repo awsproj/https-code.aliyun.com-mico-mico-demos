@@ -61,10 +61,15 @@ typedef struct testVector {
     size_t outLen;
 } testVector;
 
+static byte cipher[16];
+static byte plain[16];
+static testVector a, b, c;
+static testVector test_rabbit[3];
+
 int  rabbit_test(void);
 
 
-int application_start(void)
+int main(void)
 {
     int ret = 0;
  
@@ -84,8 +89,7 @@ int application_start(void)
 /*********************  Defination of rabbit_test() ***************************/
 int rabbit_test(void)
 {
-    byte cipher[16];
-    byte plain[16];
+
 
     const char* keys[] = 
     {    /* each keys[i] must be 128 bits��16 bytes��*/     
@@ -99,9 +103,6 @@ int rabbit_test(void)
         "\x00\x00\x00\x00\x00\x00\x00\x00",
         "\x59\x7E\x26\xC1\x75\xF5\x73\xC3",       
     };
-
-    testVector a, b, c;
-    testVector test_rabbit[3];
 
     int times = sizeof(test_rabbit) / sizeof(testVector);
 
@@ -124,7 +125,7 @@ int rabbit_test(void)
     test_rabbit[1] = b;
     test_rabbit[2] = c;
 
-    for (int i = 0; i < times; ++i) 
+    for (int i = 0; i < 3; ++i)
     {
         Rabbit enc;
         Rabbit dec;
@@ -140,15 +141,15 @@ int rabbit_test(void)
         } else
             iv = NULL;
         
-        RabbitSetKey(&enc, plain, iv);
-        RabbitSetKey(&dec, plain, iv);
+        wc_RabbitSetKey(&enc, plain, iv);
+        wc_RabbitSetKey(&dec, plain, iv);
         
         
         /* align input */
         memcpy(plain, test_rabbit[i].input, test_rabbit[i].outLen);
         
         /* Rabbit Encryption process */
-        RabbitProcess(&enc, cipher, plain,  (word32)test_rabbit[i].outLen);
+        wc_RabbitProcess(&enc, cipher, plain,  (word32)test_rabbit[i].outLen);
         
         /*Print the cipher text */
         printf("The %d's Cipher Text is: ",i+1);
@@ -161,7 +162,7 @@ int rabbit_test(void)
         
         /* Rabbit Decryption process */
 
-        RabbitProcess(&dec, plain,  cipher, (word32)test_rabbit[i].outLen);
+        wc_RabbitProcess(&dec, plain,  cipher, (word32)test_rabbit[i].outLen);
         
         /*Print the plain text */
         printf("The %d's Plain  Text is: ",i+1);
@@ -172,11 +173,12 @@ int rabbit_test(void)
          printf("\r\n");    
          printf("\r\n");
  
-         /* Compare plain text��generated from decryption, with test_rabbit[i].input defined */  
+         printf("test_rabit[i].outlen is :%d\r\n", test_rabbit[i].outLen);
+         /* Compare plain text��generated from decryption, with test_rabbit[i].input defined */
          if (memcmp(plain, test_rabbit[i].input, test_rabbit[i].outLen))
            return  i+1;
 
-         /* Compare cipher text, generated from encryption, with vtest_rabbit[i].output predefined */           
+         /* Compare cipher text, generated from encryption, with vtest_rabbit[i].output predefined */
          if (memcmp(cipher, test_rabbit[i].output, test_rabbit[i].outLen))
            return  -(i+1);
     }

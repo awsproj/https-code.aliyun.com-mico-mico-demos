@@ -65,7 +65,7 @@ typedef struct testVector {
 int  des_test(void);
 
 
-int application_start(void)
+int main(void)
 {
     int ret = 0;
  
@@ -120,12 +120,12 @@ int des_test(void)
 
     
     
-    Des_SetKey(&enc, key, iv, DES_ENCRYPTION);
-    Des_SetKey(&dec, key, iv, DES_DECRYPTION);
+    wc_Des_SetKey(&enc, key, iv, DES_ENCRYPTION);
+    wc_Des_SetKey(&dec, key, iv, DES_DECRYPTION);
     
     
     /* Encryption Process */  
-    Des_CbcEncrypt(&enc, cipher, vector, sizeof(vector));
+    wc_Des_CbcEncrypt(&enc, cipher, vector, sizeof(vector));
 
     /* Print the cipher text */
     printf("The Cipher Text is:");
@@ -138,7 +138,7 @@ int des_test(void)
 
         
     /* Decryption Process */    
-    Des_CbcDecrypt(&dec, plain, cipher, sizeof(cipher));
+        wc_Des_CbcDecrypt(&dec, plain, cipher, sizeof(cipher));
     
     /* Print the plain text */
     printf("The Plain Text is:");

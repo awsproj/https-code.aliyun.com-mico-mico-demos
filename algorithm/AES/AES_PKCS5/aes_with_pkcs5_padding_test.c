@@ -29,24 +29,26 @@
 ******************************************************************************/
 
 #include "mico.h"
+#include "base64.h"
 
 #define aes_test_log(format, ...)  custom_log("Security", format, ##__VA_ARGS__)
 
 
 
-int application_start(void){
+int main(void){
   aes_test_log("AES PKCS#5 Padding Demo.");
   
-  byte msg[] = "012345678";
+  byte msg[] = "{\"deviceId\":\"MC93c9c2d8ac435db6019ba619d6a77d\",\"sequence\":\"12345\",\"time\":1516957510,\"version\":\"111.222.333.444\"}";
   
-  byte cipher[AES_BLOCK_SIZE * 8] = "";
-  byte plain [AES_BLOCK_SIZE * 8] = "";
-  byte key[] = "0123456789abcdef";  /* align  Must be 128 bits */
-  byte iv[]  = "1234567890123456";  /* align  Must be 128 bits */
+//  byte msg[] = "{\"devVersion\":\"111.222.333.444\",\"model\":\"testModel\",\"sequence\":\"23123\",\"time\":1516957511,\"token\":\"ca06e7c08d384678b218a4b01fbfe9f9\"}";
+  byte cipher[1024] = { 0x00 };
+  byte plain [1024] = { 0x00 };
+  byte key[] = "cd3d633670f29c1c";  /* align  Must be 128 bits */
+  byte iv[]  = "cd3d633670f29c1c";  /* align  Must be 128 bits */
   Aes enc;
   Aes dec;
   AesSetKey(&enc, key, AES_BLOCK_SIZE, iv, AES_ENCRYPTION);
-  AesSetKey(&dec, key, AES_BLOCK_SIZE, iv, AES_DECRYPTION);
+//  AesSetKey(&dec, key, AES_BLOCK_SIZE, iv, AES_DECRYPTION);
   
   /* Encryption process */
   word32 ciphe_sz = AesCbcEncryptPkcs5Padding(&enc, cipher, msg, strlen((char *)msg));
@@ -61,19 +63,26 @@ int application_start(void){
     printf("%02x ", cipher[i]);    /* Print Cipher Text after decryption */
   printf("\r\n");
   
-  /* Decryption process */
-  word32 plain_sz = AesCbcDecryptPkcs5Padding(&dec, plain, cipher, ciphe_sz);
-  
-  if(plain_sz == 0){
-    aes_test_log("Decrypt failed!\r\n");
-    return 0;
-  }
-  
-  aes_test_log("The Plain Text is: ");
-  for(byte i = 0; i < plain_sz; i++)
-    printf("%02x ", plain[i]);    /* Print Plain Text after decryption */
-  printf("\r\n");
-  
+  int outlen = 0;
+  char *base = NULL;
+  base = (char *)base64_encode((unsigned char const *)cipher, strlen(cipher), &outlen);
+
+  aes_test_log("after base64, data is: %s", base);
+
+
+//  /* Decryption process */
+//  word32 plain_sz = AesCbcDecryptPkcs5Padding(&dec, plain, cipher, ciphe_sz);
+//
+//  if(plain_sz == 0){
+//    aes_test_log("Decrypt failed!\r\n");
+//    return 0;
+//  }
+//
+//  aes_test_log("The Plain Text is: ");
+//  for(byte i = 0; i < plain_sz; i++)
+//    printf("%02x ", plain[i]);    /* Print Plain Text after decryption */
+//  printf("\r\n");
+//
   return 0;
 }
 

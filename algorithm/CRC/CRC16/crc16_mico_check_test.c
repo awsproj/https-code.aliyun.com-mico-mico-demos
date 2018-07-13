@@ -64,7 +64,7 @@ typedef struct testVector {
 int  crc16_mico_check_test(void);
 
 
-int application_start(void)
+int main(void)
 {
     int ret = 0;
  
@@ -83,7 +83,6 @@ int crc16_mico_check_test(void)
      CRC16_Context crc;
      uint16_t Result;
 
-    
     /* Defination of input string to be used crc16 check */
     
     uint8_t msg[] = {0x01,0x02,0x03,0x04,0x05,0x06}; /*length is arbitrary */
