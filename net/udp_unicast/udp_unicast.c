@@ -94,7 +94,7 @@ void udp_unicast_thread( void *arg )
             require_action( len >= 0, exit, err = kConnectionErr );
 
             strcpy(ip_address, inet_ntoa(addr.sin_addr));
-            udp_unicast_log( "udp recv from %s:%d, len:%d", ip_address,addr.sin_port, len );
+            udp_unicast_log( "udp recv from %s:%d, len:%d", ip_address, ntohs(addr.sin_port), len );
             sendto( udp_fd, buf, len, 0, (struct sockaddr *)&addr, sizeof(struct sockaddr_in) );
         }
     }
