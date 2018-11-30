@@ -79,7 +79,7 @@ void test_fatfs( )
     OSStatus err = kNoErr;
     mico_filesystem_info fatfs_info = { 0 };
 
-    uint8_t mounted_name[]="0:/";
+    uint8_t mounted_name[]="0:";
     char filename[] = "MiCO.txt";
 
     char *wtext[] = { "Hi!"," Welcome to"," MiCO!" };
@@ -93,12 +93,9 @@ void test_fatfs( )
     /* Mount FATFS file system. */
     err = mico_filesystem_mount( &tester_block_device, MICO_FILESYSTEM_HANDLE_FATFS, &fs_handle, IMAGE_FILENAME );
 
-    err = mico_filesystem_get_info( &fs_handle,&fatfs_info,(char *)mounted_name );
-    fatfs_log( "filesystem total space is %dKB, free space is %dKB", fatfs_info.total_space, fatfs_info.free_space );
-
     /* Scan device and show files in the device. */
     err = mico_filesystem_scan_files( &fs_handle,(char *)mounted_name,scans_files_callback );
-    
+
     /* Format the device when there is no space in the device or FORMAT is enabled. */
     if ( fatfs_info.total_space == 0 || FORMAT_ENABLE){
         fatfs_log( "filesystem free space is %d, need format", fatfs_info.total_space );
@@ -108,26 +105,26 @@ void test_fatfs( )
         fatfs_log( "Mico_filesys_partition format success!");
         }
     }
-    
+
     /* Open file in MICO_FILESYSTEM_OPEN_WRITE_CREATE way. */
     err = mico_filesystem_file_open( &fs_handle, &file_handle, filename, MICO_FILESYSTEM_OPEN_WRITE_CREATE );
-    
+
     /* Write strings to the opened file. */
     count = sizeof( wtext )/sizeof(uint8_t *);
     for( i = 0; i < count; i++){
         err = mico_filesystem_file_write( &file_handle, wtext[i], strlen(wtext[i]), &byteswritten );
         fatfs_log( "fatfs write file,err %d,name:%s,data:%s,byteswritten:%d", err,filename ,wtext[i], (int)byteswritten );
     }
-    
+
     /* Flush the writed data into the file. */
     err = mico_filesystem_file_flush( &file_handle );
-    
+
     err = mico_filesystem_file_close( &file_handle );
 
     err = mico_filesystem_file_open( &fs_handle, &file_handle, filename, MICO_FILESYSTEM_OPEN_FOR_READ );
 
     count = get_file_size( &file_handle )/sizeof( buff );
-    
+
     /* Read the whole file data out at times. */
     for( i = 0; i < count; i++ ){
         err = mico_filesystem_file_read( &file_handle, buff, sizeof(buff), &bytesread );
@@ -144,8 +141,11 @@ void test_fatfs( )
                 rtext[i*sizeof(buff) + j] = buff[j];
             }
     }
-    
+
     fatfs_log( "fatfs read file,err %d,name:%s,data:%s",err, filename , rtext );
+
+    err = mico_filesystem_get_info( &fs_handle,&fatfs_info,(char *)mounted_name );
+    fatfs_log( "filesystem total space is %dKB, free space is %dKB", fatfs_info.total_space, fatfs_info.free_space );
 
     mico_filesystem_file_close( &file_handle );
 
