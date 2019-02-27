@@ -17,6 +17,7 @@
 > 以下示例以EMW3080模块为例，其他模块需修改相应的board信息
 
 1.打开`power_measure/main.c`
+
 2.功耗测试代码中包含了多种测试模式的设置，用户可以根据需要，配置不同的测试模式。以下示例配置为测试打开MCU和WiFi低功耗后保持WiFi连接的场景
 
 ```C
@@ -50,7 +51,9 @@ wNetConfig.key_len = 8;
 ```
 
 4.打开`mico-os/board/MX1290/platform.c`，屏蔽`init_platform()`函数中led的初始化代码，避免板上的led影响测试结果
+
 5.使用`mico make power_measure@MX1290@moc download`命令编译并下载固件到开发板上
+
 6.模块启动后会自动连接代码中设置的路由器，并打开mcu低功耗和WiFi低功耗
 
 ## 测试
@@ -58,9 +61,13 @@ wNetConfig.key_len = 8;
 > 以下测试基于MXKit-Base v1.3和CORE-3080 V2.0展开
 
 1.去掉开发板上J1处的跳线帽，并将电流表的正负极接线接到对应的针脚上
+
 ![IMG_1501.jpg-413.7kB][1]
+
 2.使用microUSB为开发板供电，并调整电流表的设置
+
 3.稍等几分钟，待测试数据相对平稳后，记录电流表上的平均电流、最大最小电流等数值
+
 ![IMG_1499.jpg-547.5kB][2]
 
   [1]: http://static.zybuluo.com/1113240207/yew03g4xkx4qh1ak6ly2uhmt/IMG_1501.jpg
