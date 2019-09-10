@@ -173,7 +173,7 @@ int application_start( void )
     if ( app_context->appConfig->localServerEnable == true )
     {
         err = mico_rtos_create_thread( NULL, MICO_APPLICATION_PRIORITY, "Local Server", localTcpServer_thread,
-                                       STACK_SIZE_LOCAL_TCP_SERVER_THREAD, (mico_thread_arg_t)app_context );
+                                       STACK_SIZE_LOCAL_TCP_SERVER_THREAD+500, (mico_thread_arg_t)app_context );
         require_noerr_action( err, exit, app_log("ERROR: Unable to start the local server thread.") );
     }
 

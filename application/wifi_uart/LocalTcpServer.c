@@ -48,22 +48,32 @@ void localTcpServer_thread(uint32_t inContext)
   OSStatus err = kUnknownErr;
   int j;
   context = (app_context_t *)inContext;
-  struct sockaddr_in addr;
+  struct sockaddr_in6 addr;
+  struct sockaddr_in v4;
   int sockaddr_t_size;
   fd_set readfds;
-  char ip_address[16];
+  char ip_address[64];
   
   int localTcpListener_fd = -1;
 
   /*Establish a TCP server fd that accept the tcp clients connections*/ 
-  localTcpListener_fd = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
+  localTcpListener_fd = socket( AF_INET6, SOCK_STREAM, IPPROTO_TCP );
   require_action(IsValidSocket( localTcpListener_fd ), exit, err = kNoResourcesErr );
-  addr.sin_family = AF_INET;
-  addr.sin_addr.s_addr = INADDR_ANY;
-  addr.sin_port = htons(context->appConfig->localServerPort);
+  addr.sin6_family = AF_INET6;
+  memcpy(&addr.sin6_addr, IP6_ADDR_ANY, sizeof(addr.sin6_addr));
+  system_log("sin6: %p-%p-%p-%p", addr.sin6_addr.addr[0], 
+    addr.sin6_addr.addr[1], addr.sin6_addr.addr[2], addr.sin6_addr.addr[3]);
+  addr.sin6_port = htons(context->appConfig->localServerPort);
   err = bind(localTcpListener_fd, (struct sockaddr *)&addr, sizeof(addr));
+  
+  if (err != 0) {
+    int socket_errno = 0;
+    socklen_t socket_errno_len = 4;
+    getsockopt(localTcpListener_fd, SOL_SOCKET, SO_ERROR, &socket_errno, &socket_errno_len);
+    system_log("bind error %d, err %d", socket_errno, err);
+  }
   require_noerr( err, exit );
-
+  
   err = listen(localTcpListener_fd, 0);
   require_noerr( err, exit );
 
@@ -76,11 +86,16 @@ void localTcpServer_thread(uint32_t inContext)
 
     /*Check tcp connection requests */
     if(FD_ISSET(localTcpListener_fd, &readfds)){
-      sockaddr_t_size = sizeof(struct sockaddr_in);
+      sockaddr_t_size = sizeof(addr);
       j = accept(localTcpListener_fd, (struct sockaddr *)&addr, (socklen_t *)&sockaddr_t_size);
 	  if (IsValidFD(j)) {
-        strcpy( ip_address, inet_ntoa(addr.sin_addr) );
-        server_log("Client %s:%d connected, fd: %d", ip_address, addr.sin_port, j);
+        if (addr.sin6_family == AF_INET) {
+            memcpy(&v4, &addr, sizeof(v4));
+            inet_ntop(AF_INET, &v4.sin_addr, ip_address, sizeof(ip_address));
+        } else {
+            inet_ntop(AF_INET6, &addr.sin6_addr, ip_address, sizeof(ip_address));
+        }
+        server_log("Client %s:%d connected, fd: %d", ip_address, addr.sin6_port, j);
         if(kNoErr != mico_rtos_create_thread(NULL, MICO_APPLICATION_PRIORITY, "Local Clients", localTcpClient_thread, STACK_SIZE_LOCAL_TCP_CLIENT_THREAD, (mico_thread_arg_t)&j) ) 
           SocketClose(&j);
       }

@@ -1,1 +1,13 @@
 .vscode
+audio
+lib_Aplus2
+net/dtls_server
+net/ssl_client
+pwm_audio
+si
+record_test
+spi_test
+src/__MACOSX
+src/src
+wifi/monitor
+lib_aiot
